@@ -105,3 +105,5 @@ Do you want to continue? (clicking cancel will open the license in the webbrowse
 
     exitNotes()
 init()
+
+
