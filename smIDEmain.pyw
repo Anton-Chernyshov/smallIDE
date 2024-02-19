@@ -155,8 +155,11 @@ def saveFile() -> None:
     updateTitleBody()
     return None
 def makeFile(FILENAME:str = str()) -> None:
-    if len(FILENAME) == "0":
+    if len(FILENAME) == 0:
         FILENAME = getInput("FileName")
+    if FILENAME in listDirs():
+        if not userAlert(f"The file {FILENAME} already exists, Are you sure you want to overwrite it?", "OVERWRITING WARNING"):
+            return None
     file = open(FILENAME, "w")
     file.close()
     openFile(FILENAME)
