@@ -1,4 +1,6 @@
-CONFIGFILEPATH = "C:\\Users\\Anton\\OneDrive\\Desktop\\SmallIDE\\smIDE.cfg" ## CHANGE THIS TO THE CORRECT PATH 
+import os
+import sys
+CONFIGFILEPATH = os.getcwd()+"\\"+"smIDE.cfg" ## CHANGE THIS TO THE CORRECT PATH 
 ## THESE WILL EVENTUALLY BE GOTTEN FROM THE SMIDE.CFG BUT I HAVENT WRITTEN THAT YET..
 #####################
 defaultConfigs = '''
@@ -65,4 +67,4 @@ def init() -> dict:
             file = open(CONFIGFILEPATH, "w")
             file.write(defaultConfigs)
             file.close()
-            exit()
+            sys.exit()
