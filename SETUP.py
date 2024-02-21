@@ -45,9 +45,7 @@ def getGithubRequest(URL:str) -> str|None:
         #print(output)
         return output
     except:
-        print(f"Either the file {URL} doesnt exist, the request timed out, or your firewall is blocking the request")
         raise ("There was an error getting the request, try again please..")
-        
 def concatenatePath(*items:str) -> str:
     out = str()
     for i in range(len(items)):
@@ -108,6 +106,7 @@ Do you want to continue? (clicking cancel will open the license in the webbrowse
 
     exitNotes()
 init()
+
 
 
 
