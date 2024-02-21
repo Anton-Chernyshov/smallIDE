@@ -6,3 +6,6 @@
 <h3>Harder setup</h3>
 <p>1. Install all the <a href = "https://github.com/Anton-Chernyshov/smallIDE/blob/main/REQUIREMENTS.md">required files</a> into the SAME directory.</p>
 <p>2. Run from setup.bat</p>
+<h3>To Do / Isnt done yet</h3>
+<p> ---Finish console / implement terminal into the IDE. Currently there is a terminal output, but that can only be seen on 1920x1080 screens, so i need to fix that. And this "terminal" doesnt allow for input() to be used, as it is an output box and isnt being read.</p>
+<p>--- implement auto display size detection, and so the size of the boxes automatically changes for your display type. Currently if you want to change this, you need to go into <a href = "https://github.com/Anton-Chernyshov/smallIDE/blob/main/smIDEmain.pyw">smIDEmain.pyw</a> and change the displaysize and dimensions of boxes manually, but this obviously isnt ideal. </p>
