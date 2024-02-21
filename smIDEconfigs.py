@@ -1,6 +1,8 @@
 import os
 import sys
-CONFIGFILEPATH = os.getcwd()+"\\"+"smIDE.cfg" ## CHANGE THIS TO THE CORRECT PATH 
+import dirs
+CONFIGFILEPATH = dirs.joinDirs(dirs.getDir(),"smIDE.cfg" )## CHANGE THIS TO THE CORRECT PATH 
+print(CONFIGFILEPATH)
 ## THESE WILL EVENTUALLY BE GOTTEN FROM THE SMIDE.CFG BUT I HAVENT WRITTEN THAT YET..
 #####################
 defaultConfigs = '''
@@ -58,7 +60,7 @@ def init() -> dict:
                         raise IndexError (f"Config File Error (smIDEconfigs.py), the item {line[0]}'s value is empty, does it have a value?")
         return CONFIGURATIONS
     except FileNotFoundError:
-
+ 
         print("File not found, Maybe the filePath is wrong or the file has been renamed? (configs.py)\nWould you like to create a new config file(y/n) ")
         
         rq = input().lower()
@@ -68,3 +70,4 @@ def init() -> dict:
             file.write(defaultConfigs)
             file.close()
             sys.exit()
+
