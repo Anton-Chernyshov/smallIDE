@@ -48,6 +48,7 @@ def setWorkingDir(curr:bool = False) ->None:
     if not curr:
         dir = getInput("What Directory would you like to work in? (This will ensure that creating / opening files without the full filepath will come from this directory)", "Change Working Directory", WORKINGDIR)
         WORKINGDIR = dir
+        os.chdir(WORKINGDIR)
     else:
         WORKINGDIR = os.getcwd()
     userAlert(f"Set working Directory to {WORKINGDIR}")
@@ -262,6 +263,7 @@ menuBar.add_cascade(label="Settings", menu=settingsBar)
 
 mainloop.config(menu=menuBar)
 mainloop.mainloop()
+
 
 
 
