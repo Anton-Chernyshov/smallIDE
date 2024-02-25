@@ -24,8 +24,8 @@ def joinDirs(*dirs:str) -> str|None:
  if "." in dirs[-1]:
   output = output[:-1]
  return output
-
   
+
 
 
 
