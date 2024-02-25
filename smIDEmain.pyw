@@ -5,7 +5,7 @@ import tkinter.simpledialog
 import subprocess
 import sys
 import os
-
+import smIDEterminal as term
 ## Custom File Imports
 import smIDEconfigs ## configurator
 from smIDEerrors import *
@@ -14,7 +14,6 @@ from smIDEerrors import *
 
 ##INITIALIZE PROGRAM (GET DATA FROM CONFIG)
 CONFIGURATIONS = smIDEconfigs.init()
-
 def getSetting(setting:str) -> str:
     try: 
         return CONFIGURATIONS[setting]
@@ -24,9 +23,12 @@ def getSetting(setting:str) -> str:
         return default
     
 ## GLOBAL VARS
-CURRENTOPENFILE = str() ## FILEPATH OF CURRENT STRING
+cache = smIDEconfigs.cache(smIDEconfigs.CACHEFILEPATH)
+CURRENTOPENFILE = cache.getFromCache("lastOpened") ## FILEPATH OF CURRENT STRING
 ISAUTOSAVE = getSetting("isAutoSave")
 WORKINGDIR = os.getcwd()
+titleBarTitle = ""
+
 ## PROCEDURES AND FUNCTIONS
 def listDirs(path:str = WORKINGDIR) -> list:
     dirs = os.listdir(path)
@@ -53,7 +55,7 @@ def setWorkingDir(curr:bool = False) ->None:
         WORKINGDIR = os.getcwd()
     userAlert(f"Set working Directory to {WORKINGDIR}")
     updateTitleBody(f"Working from {WORKINGDIR}")
-def writeToBody(textObject:tki.Text, text:str = "", writemode:int = 0) -> None: ## by default clears the object referenced
+def writeToBody(textObject:tki.Text, text:str = "", writemode:int = 0) -> str: ## by default clears the object referenced
     if writemode not in {0, 1, 2}: ## checks if a valid writemode is entered
         writemode = 0
     if writemode == 0: ## OVERWRITE TEXT
@@ -66,7 +68,7 @@ def writeToBody(textObject:tki.Text, text:str = "", writemode:int = 0) -> None: 
     else:
         print("ERROR WRITING TO BODY")
 
-    return None
+    return text
 def getFromBody(textObject:tki.Text) -> str: ## GETS text from referenced body
     return textObject.get("1.0", tki.END)
 
@@ -106,21 +108,19 @@ def writeToFile(filePath:str, data:str) -> str:
 ##TKINTER ACCESSED PROCEDURES
 def updateTitleBody(infoType:str = "") -> None:
     if infoType == "": ## DEFAULT TYPE, WHEN SHOWING WHAT FILE IS OPEN
-
         global CURRENTOPENFILE
-        writeToBody(titleBody, f"Opened :'{CURRENTOPENFILE}'")
+        global titleBarTitle
+        titleBarTitle = writeToBody(titleBody, f"Opened :'{CURRENTOPENFILE}'")
     else:
-        writeToBody(titleBody, infoType)
+        titleBarTitle = writeToBody(titleBody, infoType)
     return None
 def runCode(): ## runs code, and writes output to the console body
     ##code = getFromBody(textEditor)
     command = ["py", CURRENTOPENFILE]
     print(command)
     output = runCMD(command=command)
-
-    writeToBody(console, output, 1)
-    
-def openFile(FILENAME=str()):
+    console.writeRawText(output.decode("utf-8"))    
+def openFile(FILENAME:str = str()):
     if len(FILENAME) == 0:
         FILENAME = getInput(f"Please enter a FileName, the available ones are: {[i for i in listDirs() if os.path.isfile(WORKINGDIR+"\\"+i)]}")
     try:
@@ -148,7 +148,11 @@ def saveFile() -> None:
     if len(CURRENTOPENFILE) != 0:
         FILENAME = CURRENTOPENFILE
     else:
-        FILENAME = getInput("FileName")
+
+        FILENAME = "untitled.txt"#getInput("FileName")
+        CURRENTOPENFILE = FILENAME
+    cache.formatData("lastOpened",CURRENTOPENFILE)
+    cache.writeToCache()
     with open(FILENAME, "w") as file:
         code = getFromBody(textEditor)
         file.write(code)
@@ -186,6 +190,7 @@ def seeFiles()-> None:
     userAlert([i+"\n" for i in listDirs()], f"Files in dir {WORKINGDIR}")
     return None
 def refreshIDE() -> None:
+    global CONFIGURATIONS
     CONFIGURATIONS = smIDEconfigs.init() ## REREADS THE INIT FILE, resetting the values in the code to its ones
     mainloop.destroy()
     newInstanceOfIDE()
@@ -193,12 +198,21 @@ def refreshIDE() -> None:
 def manualSave() -> None:
     saveFile()
     userAlert("Saved File")
-
+def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None:
+    global CURRENTOPENFILE
+    if len(newFileName) == 0:
+        newFileName = getInput(f"What do you want to rename the file {oldFileName} to?", "FileRename", oldFileName)
+    try:
+        os.rename(CURRENTOPENFILE, newFileName)
+        CURRENTOPENFILE = newFileName
+        updateTitleBody()
+    except:
+        print(f"cannot rename file {oldFileName} to {newFileName}")
+    return None
 ## I cant for the life of me figure out why tkinter is parsing a "self" argument here, but it is, and it doesnt matter, so i am just going to ignore it..    
 def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence=""): ## RUNS WHENEVER the text in the main window is changed
     
     saveFile()
-
 
 
 ## MAIN LOOP
@@ -217,23 +231,26 @@ titleBody = tki.Text(width=180,
                      
                      )
 titleBody.pack()
-
 textEditor = tki.Text(width=180,
-                     height=50, 
+                     height=30, 
                      bg=getSetting("textEditorBackground"), 
                      fg=getSetting("textEditorTextColor"), 
-                     insertbackground=getSetting("textEditorCursorColor")
+                     insertbackground=getSetting("textEditorCursorColor"),
+                     wrap="word",
                      )
 textEditor.pack()
 textEditor.bind_all('<<Modified>>', onModified)
-console = tki.Text(width=180,
-                    height=9, 
-                    bg=getSetting("consoleBackground"),
-                    fg=getSetting("consoleTextColor"), 
-                    insertbackground=getSetting("consoleCursorColor")
-                    )
-console.pack()
 
+
+console = term.Terminal(mainloop,
+                        width=180,
+                        height=9,
+                        bgColor=getSetting("consoleBackground"),
+                        textColor=getSetting("consoleTextColor"),
+                        caretColor=getSetting("consoleCursorColor"),
+                        
+                        )
+console.pack()
 menuBar = tki.Menu(mainloop)
 ## RUNBAR
 runBar = tki.Menu(menuBar, tearoff=0)
@@ -249,6 +266,7 @@ fileBar.add_cascade(label="Save File", command=manualSave)
 fileBar.add_cascade(label="Save and Close File", command=sncFile)
 fileBar.add_cascade(label="Change Directory", command=setWorkingDir)
 fileBar.add_cascade(label="Show Files", command= seeFiles)
+fileBar.add_cascade(label="Rename Current File", command=renameFile)
 ## SETTINGSBAR
 settingsBar = tki.Menu(menuBar, tearoff=0)
 settingsBar.add_cascade(label="openConfigFile", command=openConfigFile)
@@ -259,10 +277,12 @@ menuBar.add_cascade(label="Run", menu=runBar)
 menuBar.add_cascade(label="File", menu=fileBar)
 menuBar.add_cascade(label="Settings", menu=settingsBar)
 
-
-
 mainloop.config(menu=menuBar)
 mainloop.mainloop()
+
+
+
+
 
 
 
