@@ -1,8 +1,8 @@
 import os
 import sys
 import dirs
-CONFIGFILEPATH = dirs.joinDirs(dirs.getDir(),"smIDE.cfg" )## CHANGE THIS TO THE CORRECT PATH 
-print(CONFIGFILEPATH)
+CONFIGFILEPATH = dirs.joinDirs(dirs.getDir(),"smIDE.cfg" )  
+CACHEFILEPATH = dirs.joinDirs(dirs.getDir(), "smIDE.cache")
 ## THESE WILL EVENTUALLY BE GOTTEN FROM THE SMIDE.CFG BUT I HAVENT WRITTEN THAT YET..
 #####################
 defaultConfigs = '''
@@ -70,4 +70,53 @@ def init() -> dict:
             file.write(defaultConfigs)
             file.close()
             sys.exit()
+class cache():
+    def __init__(self, path:str) -> None:
+        self.path = path
+        return None
+    def formatData(self,key:str, data:str) -> str|None:
+        try:
+            format = {key:data}  #{"NAME":"DATASTRAND"}
+            self.format = format
+            return format
+        except:
+            return None
+    def writeToCache(self, formattedData:str = "") -> None:
+        
+        try:
+            print(self.path)
+            with open(self.path, "a") as cache:
+                if len(formattedData) == 0:
+                    cache.write(self.format+"\n")
+                else:
+                    cache.writable(formattedData+"\n")
+            cache.close()
+        except FileNotFoundError:
+            print(f"Cache file {self.path} cannot be found, maybe it was initiated wrong or doesnt exist?")
+        except:
+            print("cannot wrte to cache..")
+        return None
+    def readCache(self) -> str|None:
+        try:
+            with open(self.path, "r") as cache:
+                data = cache.read()
+                data = dict(data)
+                self.data = data
+            cache.close()
+            return data
+        except FileNotFoundError:
+             print(f"Cache file {self.path} cannot be found, maybe it was initiated wrong or doesnt exist?")
+        except:
+            print("Cannot read cache..")
 
+    def getFromCache(self, key:str) -> str|None:
+        self.readCache()
+        try:
+            return self.data[key]
+             
+        except KeyError:
+            print(f"The key {key} does't exist in the cache, is it the right one?")
+            return None
+        except:
+            print("Failed to get data from cache")
+            return None
