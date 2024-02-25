@@ -9,7 +9,7 @@ import webbrowser
 class FailedRequest():pass ## This things entire existance is to make debugging easier, if you have this error, it is because python cant reach github, so either the repo is broken, you have no internet, or a firewall is blocking the request
 
 REQUESTDOMAIN = "https://raw.github.com/Anton-Chernyshov/smallIDE/main/"
-requiredFilesToInstall = ["smIDEconfigs.py", "smIDEmain.pyw", "smIDE.cfg", "smIDEerrors.py", "run.py", "start.bat", "smIDEterminal.py", "dirs.py"]
+requiredFilesToInstall = ["smIDEconfigs.py", "smIDEmain.py", "smIDE.cfg", "smIDEerrors.py", "run.py", "start.bat", "smIDEterminal.py", "dirs.py"]
 def openURL(url):
     if not webbrowser.open_new(url):
         print("No WebBrowser found..")
