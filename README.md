@@ -1,5 +1,6 @@
 # smallIDE
 <h1>INSTALLATION</h1>
+<p>Prior to installation, ensure you have python installed with the additional libraries <a href="https://pypi.org/project/requests/">requests</a> and <a href="https://docs.python.org/3/library/webbrowser.html">webbrowser</a></p>
 <h3>Simple Setup</h3>
 <p>1. Click on <a href = "https://github.com/Anton-Chernyshov/smallIDE/blob/main/SETUP.py">setup.py</a> and download it. Then run it, and follow the setup instructions, and it should download all the required files.</p> 
 <p>2. To run the script, either run '<a href = "https://github.com/Anton-Chernyshov/smallIDE/blob/main/run.py">run.py</a>', or if you cant access terminal due to permissions, '<a href = "https://github.com/Anton-Chernyshov/smallIDE/blob/main/start.bat">start.bat</a>' is an alternative working through PS.</p>
