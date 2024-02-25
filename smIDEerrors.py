@@ -1,4 +1,3 @@
-class FileTypeError():
-    pass
-class DirectoryExistsError():
-    pass
+class FileTypeError(): pass
+class PythonCommandError(): pass
+class DirectoryExistsError(): pass
