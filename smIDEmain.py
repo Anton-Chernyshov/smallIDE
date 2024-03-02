@@ -5,27 +5,19 @@ import tkinter.simpledialog
 import subprocess
 import sys
 import os
-import smIDEterminal as term
 ## Custom File Imports
-import smIDEconfigs ## configurator
+import smIDEconfigs
 from smIDEerrors import *
-
+import smIDEterminal as term
+import dirs
 
 
 ##INITIALIZE PROGRAM (GET DATA FROM CONFIG)
-CONFIGURATIONS = smIDEconfigs.init()
-def getSetting(setting:str) -> str:
-    try: 
-        return CONFIGURATIONS[setting]
-    except:
-        default = getSetting("defaultHexColor")
-        print(f"Configuration {setting} doesn't exist, Defaulting to default hex value {default}")
-        return default
-    
+CONFIGURATIONS = smIDEconfigs.ConfigFile()
 ## GLOBAL VARS
-cache = smIDEconfigs.cache(smIDEconfigs.CACHEFILEPATH)
-CURRENTOPENFILE = cache.getFromCache("lastOpened") ## FILEPATH OF CURRENT STRING
-ISAUTOSAVE = getSetting("isAutoSave")
+lastOpenedCache = smIDEconfigs.Cache(smIDEconfigs.CACHEFILEPATH)
+CURRENTOPENFILE = lastOpenedCache.readCache() ## FILEPATH OF CURRENT STRING
+ISAUTOSAVE = CONFIGURATIONS.getSetting("isAutoSave")
 WORKINGDIR = os.getcwd()
 titleBarTitle = ""
 
@@ -74,7 +66,7 @@ def getFromBody(textObject:tki.Text) -> str: ## GETS text from referenced body
 
 def runCMD(command:list = [str()]) -> str:
     try:
-        output = subprocess.check_output(command, shell=True)
+        output = subprocess.call(command, shell=True)
         return output
 
     except:
@@ -88,7 +80,7 @@ def getFromFile(filePath:str) -> str:
             file.close()
             updateTitleBody()
             return data
-    except FileNotFoundError:
+    except FileNotFoundError: 
         CURRENTOPENFILE = str()
 
         raise FileNotFoundError(f"Function getFromFile cannot open file {filePath} as it does not exist")
@@ -119,10 +111,13 @@ def runCode(): ## runs code, and writes output to the console body
     command = ["py", CURRENTOPENFILE]
     print(command)
     output = runCMD(command=command)
-    console.writeRawText(output.decode("utf-8"))    
+    if type(output) == str:
+        console.writeRawText(output)
+    else:
+        console.writeRawText(output.decode("utf-8"))    
 def openFile(FILENAME:str = str()):
     if len(FILENAME) == 0:
-        FILENAME = getInput(f"Please enter a FileName, the available ones are: {[i for i in listDirs() if os.path.isfile(WORKINGDIR+"\\"+i)]}")
+        FILENAME = getInput(f"Please enter a FileName")
     try:
         writeToBody(textEditor, getFromFile(FILENAME))
     except:
@@ -149,10 +144,10 @@ def saveFile() -> None:
         FILENAME = CURRENTOPENFILE
     else:
 
-        FILENAME = "untitled.txt"#getInput("FileName")
+        FILENAME = "untitled.txt" #getInput("FileName")
         CURRENTOPENFILE = FILENAME
-    cache.formatData("lastOpened",CURRENTOPENFILE)
-    cache.writeToCache()
+    lastOpenedCache.formatData(CURRENTOPENFILE)
+    lastOpenedCache.writeToCache()
     with open(FILENAME, "w") as file:
         code = getFromBody(textEditor)
         file.write(code)
@@ -191,7 +186,7 @@ def seeFiles()-> None:
     return None
 def refreshIDE() -> None:
     global CONFIGURATIONS
-    CONFIGURATIONS = smIDEconfigs.init() ## REREADS THE INIT FILE, resetting the values in the code to its ones
+    CONFIGURATIONS = smIDEconfigs.ConfigFile() ## REREADS THE INIT FILE, resetting the values in the code to its ones
     mainloop.destroy()
     newInstanceOfIDE()
     return None
@@ -209,6 +204,12 @@ def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None
     except:
         print(f"cannot rename file {oldFileName} to {newFileName}")
     return None
+
+def parseText(text:str) -> str:
+    if len(text) == 0:
+        return str
+    for i in text:
+        pass
 ## I cant for the life of me figure out why tkinter is parsing a "self" argument here, but it is, and it doesnt matter, so i am just going to ignore it..    
 def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence=""): ## RUNS WHENEVER the text in the main window is changed
     
@@ -219,23 +220,23 @@ def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence="")
 
 mainloop = tki.Tk()
 mainloop.title("Small IDE")
-mainloop.configure(background=getSetting("mainBackGround"))
+mainloop.configure(background=CONFIGURATIONS.getSetting("mainBackGround"))
 mainloop.geometry("1920x1080")
 
 
-titleBody = tki.Text(width=180,
-                     height=1,
-                     bg = getSetting("titleBodyBackground"),
-                     fg = getSetting("titleBodyTextColor"),
-                     insertbackground=getSetting("titleBodyCursorColor"),
+titleBody = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
+                     height=CONFIGURATIONS.getSetting("titleBodyHeight"),
+                     bg = CONFIGURATIONS.getSetting("titleBodyBackground"),
+                     fg = CONFIGURATIONS.getSetting("titleBodyTextColor"),
+                     insertbackground=CONFIGURATIONS.getSetting("titleBodyCursorColor"),
                      
                      )
 titleBody.pack()
-textEditor = tki.Text(width=180,
-                     height=30, 
-                     bg=getSetting("textEditorBackground"), 
-                     fg=getSetting("textEditorTextColor"), 
-                     insertbackground=getSetting("textEditorCursorColor"),
+textEditor = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
+                     height=CONFIGURATIONS.getSetting("textEditorBodyHeight"), 
+                     bg=CONFIGURATIONS.getSetting("textEditorBackground"), 
+                     fg=CONFIGURATIONS.getSetting("textEditorTextColor"), 
+                     insertbackground=CONFIGURATIONS.getSetting("textEditorCursorColor"),
                      wrap="word",
                      )
 textEditor.pack()
@@ -243,11 +244,11 @@ textEditor.bind_all('<<Modified>>', onModified)
 
 
 console = term.Terminal(mainloop,
-                        width=180,
-                        height=9,
-                        bgColor=getSetting("consoleBackground"),
-                        textColor=getSetting("consoleTextColor"),
-                        caretColor=getSetting("consoleCursorColor"),
+                        width=CONFIGURATIONS.getSetting("generalBodyWidth"),
+                        height=CONFIGURATIONS.getSetting("consoleBodyHeight"),
+                        bgColor=CONFIGURATIONS.getSetting("consoleBackground"),
+                        textColor=CONFIGURATIONS.getSetting("consoleTextColor"),
+                        caretColor=CONFIGURATIONS.getSetting("consoleCursorColor"),
                         
                         )
 console.pack()
@@ -277,9 +278,10 @@ menuBar.add_cascade(label="Run", menu=runBar)
 menuBar.add_cascade(label="File", menu=fileBar)
 menuBar.add_cascade(label="Settings", menu=settingsBar)
 
+openFile(CURRENTOPENFILE) ## Opens up the last opened file
+
 mainloop.config(menu=menuBar)
 mainloop.mainloop()
-
 
 
 
