@@ -1,0 +1,1 @@
+smIDEconfigs.py, smIDEmain.py, smIDE.cfg, smIDEerrors.py, run.py, start.bat, smIDEterminal.py, dirs.py
