@@ -1,4 +1,6 @@
 # smallIDE
+<h1>ABOUT</h1>
+<p>smallIDE is a text editor built entirely in python.</p>
 <h1>INSTALLATION</h1>
 <p>Prior to installation, ensure you have <a href="https://www.python.org/downloads/">python</a> installed with the additional libraries <a href="https://pypi.org/project/requests/">requests</a> and <a href="https://docs.python.org/3/library/webbrowser.html">webbrowser</a></p>
 <h3>Simple Setup</h3>
