@@ -9,7 +9,6 @@ import webbrowser
 class FailedRequest():pass ## This things entire existance is to make debugging easier, if you have this error, it is because python cant reach github, so either the repo is broken, you have no internet, or a firewall is blocking the request
 
 REQUESTDOMAIN = "https://raw.github.com/Anton-Chernyshov/smallIDE/main/"
-requiredFilesToInstall = ["smIDEconfigs.py", "smIDEmain.py", "smIDE.cfg", "smIDEerrors.py", "run.py", "start.bat", "smIDEterminal.py", "dirs.py"]
 def openURL(url):
     if not webbrowser.open_new(url):
         print("No WebBrowser found..")
@@ -57,7 +56,8 @@ def installFiles(filesList:list, dir:str) -> None:
         request = getGithubRequest(concatenatePath(REQUESTDOMAIN, fileName))
         print(f"request recieved from github, writing to file {fileName}\n")
         writeToFile(concatenatePath(dir,"\\", fileName), request)
-        print(f"({i+1}/{len(requiredFilesToInstall)}) files installed..\n")
+
+        print(f"({i+1}/{len(filesList)}) files installed..\n")
 def exitNotes()->None:
     print("-"*50)
     print("""Some things to note:
@@ -101,7 +101,7 @@ Do you want to continue? (clicking cancel will open the license in the webbrowse
     if len(installToDirectory) == 0:
         installToDirectory = curDir
 
-    
+    requiredFilesToInstall = getGithubRequest(concatenatePath(REQUESTDOMAIN, "REQUIREMENTS.txt")).decode().strip().split(",") 
     installFiles(requiredFilesToInstall,installToDirectory)
 
     exitNotes()
