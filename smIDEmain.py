@@ -8,7 +8,6 @@ import os
 ## Custom File Imports
 import smIDEconfigs
 from smIDEerrors import *
-import smIDEterminal as term
 import dirs
 
 
@@ -236,16 +235,6 @@ textEditor = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
 textEditor.pack()
 textEditor.bind_all('<<Modified>>', onModified)
 
-
-console = term.Terminal(mainloop,
-                        width=CONFIGURATIONS.getSetting("generalBodyWidth"),
-                        height=CONFIGURATIONS.getSetting("consoleBodyHeight"),
-                        bgColor=CONFIGURATIONS.getSetting("consoleBackground"),
-                        textColor=CONFIGURATIONS.getSetting("consoleTextColor"),
-                        caretColor=CONFIGURATIONS.getSetting("consoleCursorColor"),
-                        
-                        )
-console.pack()
 menuBar = tki.Menu(mainloop)
 ## RUNBAR
 runBar = tki.Menu(menuBar, tearoff=0)
