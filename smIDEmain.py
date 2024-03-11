@@ -110,6 +110,7 @@ def runCode():
     os.system(f"start /wait cmd /c {"py -i "+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
 
 def openFile(FILENAME:str = str()):
+
     if len(FILENAME) == 0:
         FILENAME = getInput(f"Please enter a FileName")
     try:
@@ -246,6 +247,7 @@ runBar.add_command(label="Exit without Saving", command=sys.exit) ## INSTAQUIT!!
 
 ## FILEBAR
 fileBar = tki.Menu(menuBar,tearoff=0)
+
 fileBar.add_cascade(label="Make File", command=makeFile)
 fileBar.add_cascade(label="Open File", command=openFile)
 fileBar.add_cascade(label="Save File", command=manualSave)
@@ -253,12 +255,16 @@ fileBar.add_cascade(label="Save and Close File", command=sncFile)
 fileBar.add_cascade(label="Change Directory", command=setWorkingDir)
 fileBar.add_cascade(label="Show Files", command= seeFiles)
 fileBar.add_cascade(label="Rename Current File", command=renameFile)
+
 ## SETTINGSBAR
 settingsBar = tki.Menu(menuBar, tearoff=0)
+
 settingsBar.add_cascade(label="openConfigFile", command=openConfigFile)
 settingsBar.add_cascade(label="Refresh IDE", command=refreshIDE)
 settingsBar.add_cascade(label="New Instance", command=newInstanceOfIDE)
+
 ## add the menus
+
 menuBar.add_cascade(label="Run", menu=runBar)
 menuBar.add_cascade(label="File", menu=fileBar)
 menuBar.add_cascade(label="Settings", menu=settingsBar)
