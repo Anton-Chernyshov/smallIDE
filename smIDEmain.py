@@ -108,13 +108,7 @@ def updateTitleBody(infoType:str = "") -> None:
     return None
 def runCode(): ## runs code, and writes output to the console body
     ##code = getFromBody(textEditor)
-    command = ["py", CURRENTOPENFILE]
-    print(command)
-    output = runCMD(command=command)
-    if type(output) == str:
-        console.writeRawText(output)
-    else:
-        console.writeRawText(output.decode("utf-8"))    
+    os.system(f"start /wait cmd /c {"py "+CURRENTOPENFILE}")
 def openFile(FILENAME:str = str()):
     if len(FILENAME) == 0:
         FILENAME = getInput(f"Please enter a FileName")
