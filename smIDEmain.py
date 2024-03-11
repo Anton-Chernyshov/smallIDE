@@ -126,12 +126,7 @@ def openFile(FILENAME:str = str()):
     
 
 def saveFile() -> None:  
-    if ISAUTOSAVE: ## RESETS THE MODIFIED FLAG
-        textEditor._resetting_modified_flag = True
-        try:
-            textEditor.tk.call(textEditor._w, 'edit', 'modified', 0)
-        finally:
-            textEditor._resetting_modified_flag = False
+    
 
 
     global CURRENTOPENFILE
@@ -188,6 +183,7 @@ def refreshIDE() -> None:
 def manualSave() -> None:
     saveFile()
     userAlert("Saved File")
+    
 def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None:
     global CURRENTOPENFILE
     if len(newFileName) == 0:
@@ -208,7 +204,17 @@ def parseText(text:str) -> str:
 ## I cant for the life of me figure out why tkinter is parsing a "self" argument here, but it is, and it doesnt matter, so i am just going to ignore it..    
 def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence=""): ## RUNS WHENEVER the text in the main window is changed
     
-    saveFile()
+
+    if ISAUTOSAVE: ## RESETS THE MODIFIED FLAG
+        
+        textEditor._resetting_modified_flag = True
+        try:
+            textEditor.tk.call(textEditor._w, 'edit', 'modified', 0)
+        finally:
+            textEditor._resetting_modified_flag = False
+        saveFile()
+    else:
+        mainloop.title("*Small IDE")
 
 
 ## MAIN LOOP
@@ -269,7 +275,8 @@ menuBar.add_cascade(label="Run", menu=runBar)
 menuBar.add_cascade(label="File", menu=fileBar)
 menuBar.add_cascade(label="Settings", menu=settingsBar)
 
-openFile(CURRENTOPENFILE) ## Opens up the last opened file
+if CONFIGURATIONS.getSetting("openLastFileOnStartup"):
+    openFile(CURRENTOPENFILE) ## Opens up the last opened file
 
 mainloop.config(menu=menuBar)
 mainloop.mainloop()
