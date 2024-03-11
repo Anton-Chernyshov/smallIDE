@@ -8,7 +8,7 @@ import os
 ## Custom File Imports
 import smIDEconfigs
 from smIDEerrors import *
-import dirs
+
 
 
 ##INITIALIZE PROGRAM (GET DATA FROM CONFIG)
@@ -105,9 +105,10 @@ def updateTitleBody(infoType:str = "") -> None:
     else:
         titleBarTitle = writeToBody(titleBody, infoType)
     return None
-def runCode(): ## runs code, and writes output to the console body
-    ##code = getFromBody(textEditor)
-    os.system(f"start /wait cmd /c {"py "+CURRENTOPENFILE}")
+def runCode(): 
+
+    os.system(f"start /wait cmd /c {"py -i "+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
+
 def openFile(FILENAME:str = str()):
     if len(FILENAME) == 0:
         FILENAME = getInput(f"Please enter a FileName")
@@ -137,7 +138,7 @@ def saveFile() -> None:
         FILENAME = CURRENTOPENFILE
     else:
 
-        FILENAME = "untitled.txt" #getInput("FileName")
+        FILENAME = "untitled.txt" ## default filename 
         CURRENTOPENFILE = FILENAME
     lastOpenedCache.formatData(CURRENTOPENFILE)
     lastOpenedCache.writeToCache()
@@ -214,7 +215,7 @@ def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence="")
 mainloop = tki.Tk()
 mainloop.title("Small IDE")
 mainloop.configure(background=CONFIGURATIONS.getSetting("mainBackGround"))
-mainloop.geometry("1920x1080")
+
 
 
 titleBody = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
@@ -225,6 +226,7 @@ titleBody = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      
                      )
 titleBody.pack()
+
 textEditor = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      height=CONFIGURATIONS.getSetting("textEditorBodyHeight"), 
                      bg=CONFIGURATIONS.getSetting("textEditorBackground"), 
