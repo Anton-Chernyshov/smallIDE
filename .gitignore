@@ -5,7 +5,9 @@ __pycache__/
 
 # C extensions
 *.so
-
+# my files to ignore
+test.py
+untitled.txt
 # Distribution / packaging
 .Python
 build/
