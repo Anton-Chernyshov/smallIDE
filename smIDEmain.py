@@ -121,10 +121,6 @@ def openFile(FILENAME:str = str()):
         makeFile(FILENAME)
         writeToBody(textEditor, getFromFile(FILENAME))
 
-    
-        
-    
-
 def saveFile() -> None:  
     
 
