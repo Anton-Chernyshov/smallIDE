@@ -280,11 +280,3 @@ if CONFIGURATIONS.getSetting("openLastFileOnStartup"):
 
 mainloop.config(menu=menuBar)
 mainloop.mainloop()
-
-
-
-
-
-
-
-
