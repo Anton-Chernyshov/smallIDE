@@ -140,7 +140,9 @@ def saveFile() -> None:
         file.close()
     updateTitleBody()
     return None
-def makeFile(FILENAME:str = str()) -> None:
+def makeFile(FILENAME:str|None = str()) -> None:
+    if type(FILENAME) == None:
+        return None
     if len(FILENAME) == 0:
         FILENAME = getInput("FileName")
     if FILENAME in listDirs():
