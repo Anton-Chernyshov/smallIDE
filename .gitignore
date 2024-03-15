@@ -10,6 +10,22 @@ test.py
 untitled.txt
 test.txt
 hangman.py
+
+
+## smIDE files which are user unique
+smIDE.cache
+
+
+
+
+
+
+
+
+
+
+
+
 # Distribution / packaging
 .Python
 build/
