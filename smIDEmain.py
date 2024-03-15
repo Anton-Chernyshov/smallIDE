@@ -145,6 +145,8 @@ def makeFile(FILENAME:str|None = str()) -> None:
         return None
     if len(FILENAME) == 0:
         FILENAME = getInput("FileName")
+        if len(FILENAME)== 0:
+            return None
     if FILENAME in listDirs():
         if not userAlert(f"The file {FILENAME} already exists, Are you sure you want to overwrite it?", "OVERWRITING WARNING"):
             return None
@@ -197,12 +199,41 @@ def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None
 def parseText(text:str) -> str:
     if len(text) == 0:
         return str
-    for i in text:
-        pass
+    ## Prse text
+    ## also https://www.tutorialspoint.com/how-to-change-the-color-of-certain-words-in-a-tkinter-text-widget
+    
+    textEditor.tag_config("blank", foreground="#ffffff") ## tag for brackets
+    textEditor.tag_config("bracket", foreground="#ebcd0c") ## tag for brackets
+    textEditor.tag_config("speechMark", foreground="#ff7b00") ## tag for strings
+    textEditor.tag_config("comment", foreground="#777777")
+    textEditor.tag_config("declareVariable", foreground="#34a2ea")
+    textList = text.split("\n")
+    textDict = {}
+    ## creates a dict of {linenumber:line}
+    for i, item in enumerate(textList):
+
+        textDict.update({i+1:item})
+    ## goes through the dict, looking for characters and "painting" them the right tag color
+    for i in textDict:
+
+        for j, item in enumerate(textDict[i]):
+
+            if item in {"(", ")", "[", "]", "{", "}"}:
+                textEditor.tag_add("bracket", str(i)+"."+str(j), str(i)+"."+str(j+1))
+            elif item in {"'",'"'}:
+                textEditor.tag_add("speechMark", str(i)+"."+str(j), str(i)+"."+str(j+1) )
+            elif item == "#":
+                textEditor.tag_add("comment", str(i)+"."+str(j), str(i)+"."+str(len(textDict[i])))
+            elif item == "=":
+                textEditor.tag_add("declareVariable", str(i)+"."+"0", str(i)+"."+str(j-1))
+            else:
+                for tag in textEditor.tag_names():
+                    textEditor.tag_remove(tag, str(i)+"."+str(j), str(i)+"."+str(j+1))
+
 ## I cant for the life of me figure out why tkinter is parsing a "self" argument here, but it is, and it doesnt matter, so i am just going to ignore it..    
 def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence=""): ## RUNS WHENEVER the text in the main window is changed
     
-
+    parseText(getFromBody(textEditor))
     if ISAUTOSAVE: ## RESETS THE MODIFIED FLAG
         
         textEditor._resetting_modified_flag = True
@@ -231,7 +262,7 @@ titleBody = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      
                      )
 titleBody.pack()
-
+textInfo = tki.Text()
 textEditor = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      height=CONFIGURATIONS.getSetting("textEditorBodyHeight"), 
                      bg=CONFIGURATIONS.getSetting("textEditorBackground"), 

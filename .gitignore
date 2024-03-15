@@ -8,6 +8,8 @@ __pycache__/
 # my files to ignore
 test.py
 untitled.txt
+test.txt
+hangman.py
 # Distribution / packaging
 .Python
 build/
