@@ -6,6 +6,7 @@ import subprocess
 import sys
 import os
 from tkinter import filedialog
+#from custom tkinter import *
 ## Custom File Imports
 import smIDEconfigs
 from smIDEerrors import *
@@ -111,10 +112,9 @@ def runCode():
     os.system(f"start /wait cmd /c {'py -i '+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
 
 def openFile(FILENAME:str = ""):
-    mainloop.filename = filedialog.askopenfilename(initialdir=WORKINGDIR, title ='Open File', filetypes = (('Python Files', '*.py'),('All Files', '*.*')))
-    FILENAME = mainloop.filename
     if len(FILENAME) == 0:
-        FILENAME = getInput(f"Please enter a FileName")
+        mainloop.filename = filedialog.askopenfilename(initialdir=WORKINGDIR, title ='Open File', filetypes = (('Python Files', '*.py'),('All Files', '*.*')))
+        FILENAME = mainloop.filename
     try:
         writeToBody(textEditor, getFromFile(FILENAME))
     except:
@@ -131,7 +131,6 @@ def saveFile() -> None:
     if len(CURRENTOPENFILE) != 0:
         FILENAME = CURRENTOPENFILE
     else:
-
         FILENAME = "untitled.txt" ## default filename 
         CURRENTOPENFILE = FILENAME
     lastOpenedCache.formatData(CURRENTOPENFILE)
