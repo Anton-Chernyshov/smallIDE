@@ -5,6 +5,7 @@ import tkinter.simpledialog
 import subprocess
 import sys
 import os
+from tkinter import filedialog
 ## Custom File Imports
 import smIDEconfigs
 from smIDEerrors import *
@@ -107,10 +108,11 @@ def updateTitleBody(infoType:str = "") -> None:
     return None
 def runCode(): 
 
-    os.system(f"start /wait cmd /c {"py -i "+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
+    os.system(f"start /wait cmd /c {'py -i '+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
 
-def openFile(FILENAME:str = str()):
-
+def openFile(FILENAME:str = ""):
+    mainloop.filename = filedialog.askopenfilename(initialdir=WORKINGDIR, title ='Open File', filetypes = (('Python Files', '*.py'),('All Files', '*.*')))
+    FILENAME = mainloop.filename
     if len(FILENAME) == 0:
         FILENAME = getInput(f"Please enter a FileName")
     try:
