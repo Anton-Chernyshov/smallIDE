@@ -24,21 +24,36 @@ titleBarTitle = ""
 
 ## PROCEDURES AND FUNCTIONS
 def listDirs(path:str = WORKINGDIR) -> list:
+    """
+    Returns a list of all directories in the current directory
+    """
     dirs = os.listdir(path)
     return dirs
 def getInput(input:str, prompt:str = "Prompt", initialValue:str = "") -> str: ## CREATES POPUP ASKING FOR STRING INPUT
+    """
+    Gets user input as string, returns empty if |Cancel|
+    """
     out = tkinter.simpledialog.askstring(prompt, input, initialvalue=initialValue)
     if type(out) == str:
         return out
     else:
         return str()
 def getYesNo(input:str, prompt:str = "Prompt") -> bool: ## CREATES POPUP ASKING FOR BOOL INPUT
+    """
+    Gives user an alert Yes | No and returns True | False
+    """
     out = tkinter.messagebox.askyesno(prompt, input)
     return out
 def userAlert(input:str, prompt:str="Alert") -> bool:
+    """
+    Gives user an alert OK | Cancel and returns True | False
+    """
     resp = tkinter.messagebox.askokcancel(prompt, input)
     return resp
 def setWorkingDir(curr:bool = False) ->None:
+    """
+    Changes the directory
+    """
     global WORKINGDIR
     if not curr:
         dir = getInput("What Directory would you like to work in? (This will ensure that creating / opening files without the full filepath will come from this directory)", "Change Working Directory", WORKINGDIR)
@@ -49,6 +64,9 @@ def setWorkingDir(curr:bool = False) ->None:
     userAlert(f"Set working Directory to {WORKINGDIR}")
     updateTitleBody(f"Working from {WORKINGDIR}")
 def writeToBody(textObject:tki.Text, text:str = "", writemode:int = 0) -> str: ## by default clears the object referenced
+    """
+    writes data to referenced body
+    """
     if writemode not in {0, 1, 2}: ## checks if a valid writemode is entered
         writemode = 0
     if writemode == 0: ## OVERWRITE TEXT
@@ -63,9 +81,16 @@ def writeToBody(textObject:tki.Text, text:str = "", writemode:int = 0) -> str: #
 
     return text
 def getFromBody(textObject:tki.Text) -> str: ## GETS text from referenced body
+    """
+    Gets all text from the referenced body
+    """
     return textObject.get("1.0", tki.END)
 
 def runCMD(command:list = [str()]) -> str:
+
+    """
+    Runs command under subprocess.call()
+    """
     try:
         output = subprocess.call(command, shell=True)
         return output
@@ -73,6 +98,9 @@ def runCMD(command:list = [str()]) -> str:
     except:
         return(f"the command {str().join(command)} cannot be executed, or throws an error upon execution.\nRead the console for more")
 def getFromFile(filePath:str) -> str:
+    """
+    Used to open a file and get data from it
+    """
     try:
         with open(filePath, "r") as file:
             global CURRENTOPENFILE 
@@ -87,6 +115,9 @@ def getFromFile(filePath:str) -> str:
         raise FileNotFoundError(f"Function getFromFile cannot open file {filePath} as it does not exist")
     
 def writeToFile(filePath:str, data:str) -> str:
+    """
+    writes to a specific file, used by saveFile()
+    """
     global CURRENTOPENFILE
     try:
         with open(filePath, "w") as file:
@@ -100,6 +131,9 @@ def writeToFile(filePath:str, data:str) -> str:
         raise FileNotFoundError(f"Function writeToFile cannot open file {filePath} as it does not exist")
 ##TKINTER ACCESSED PROCEDURES
 def updateTitleBody(infoType:str = "") -> None:
+    """
+    writes to specifically the body titleBody
+    """
     if infoType == "": ## DEFAULT TYPE, WHEN SHOWING WHAT FILE IS OPEN
         global CURRENTOPENFILE
         global titleBarTitle
@@ -112,6 +146,9 @@ def runCode():
     os.system(f"start /wait cmd /c {'py -i '+CURRENTOPENFILE}") ## opens a new terminal window to run the current file in
 
 def openFile(FILENAME:str = ""):
+    """
+    Opens windows fileExporer to get a filePath.
+    """
     if len(FILENAME) == 0:
         mainloop.filename = filedialog.askopenfilename(initialdir=WORKINGDIR, title ='Open File', filetypes = (('Python Files', '*.py'),('All Files', '*.*')))
         FILENAME = mainloop.filename
@@ -124,7 +161,9 @@ def openFile(FILENAME:str = ""):
         writeToBody(textEditor, getFromFile(FILENAME))
 
 def saveFile() -> None:  
-    
+    """
+    Opens current open file, then writes to it..
+    """
 
 
     global CURRENTOPENFILE
@@ -142,6 +181,10 @@ def saveFile() -> None:
     updateTitleBody()
     return None
 def makeFile(FILENAME:str|None = str()) -> None:
+    
+    """
+    Creates the file FILENAME at current directory...
+    """
     if type(FILENAME) == None:
         return None
     if len(FILENAME) == 0:
@@ -157,15 +200,24 @@ def makeFile(FILENAME:str|None = str()) -> None:
     updateTitleBody()
     return None
 def sncFile(): ## SAVE AND EXIT
+    """
+    Shortcut to save file and quit the program
+    """
     saveFile()
-    sys.exit()
+    sys.exit(0)
 
 
 def openConfigFile() -> None:
+    """
+    Shortcut to open the inbuilt config file
+    """
     openFile(smIDEconfigs.CONFIGFILEPATH)
     updateTitleBody()
     return None
 def newInstanceOfIDE() -> None: ## Havent added support for the EXE format yet.. CBA ATM
+    """
+    Uses the runCMD to rerun the file.. only works if python is installed globally and called by the 'py' cmd
+    """
     fileName = __file__
     if ".py" in fileName or ".pyw" in fileName:
         runCMD(["py", fileName])
@@ -176,6 +228,9 @@ def seeFiles()-> None:
     userAlert([i+"\n" for i in listDirs()], f"Files in dir {WORKINGDIR}")
     return None
 def refreshIDE() -> None:
+    """
+    destroys mainloop and calls newInstanceOfIDE
+    """
     global CONFIGURATIONS
     CONFIGURATIONS = smIDEconfigs.ConfigFile() ## REREADS THE INIT FILE, resetting the values in the code to its ones
     mainloop.destroy()
@@ -186,6 +241,9 @@ def manualSave() -> None:
     userAlert("Saved File")
     
 def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None:
+    """
+    procedure to rename file
+    """
     global CURRENTOPENFILE
     if len(newFileName) == 0:
         newFileName = getInput(f"What do you want to rename the file {oldFileName} to?", "FileRename", oldFileName)
@@ -196,15 +254,23 @@ def renameFile(oldFileName:str = CURRENTOPENFILE, newFileName:str=str()) -> None
     except:
         print(f"cannot rename file {oldFileName} to {newFileName}")
     return None
+def updateTextInfo():
+    cursorPos = textEditor.index(tkinter.INSERT), textEditor.index(tkinter.CURRENT)
+    fileName = CURRENTOPENFILE.split("/")[-1]
+    info = f"fileName: '{fileName}'  |column: {cursorPos} |row: {1} "
+    writeToBody(textInfo,info)
 
 def parseText(text:str) -> str:
+    """
+    Iterates through the text, and colours by adding tkinter tag objects
+    """
     if len(text) == 0:
         return str
-    ## Prse text
-    ## also https://www.tutorialspoint.com/how-to-change-the-color-of-certain-words-in-a-tkinter-text-widget
+    ## Parse text
     
     textEditor.tag_config("blank", foreground="#ffffff") ## tag for brackets
     textEditor.tag_config("bracket", foreground="#ebcd0c") ## tag for brackets
+    textEditor.tag_config("bracket2", foreground="#4fd3fc")
     textEditor.tag_config("speechMark", foreground="#ff7b00") ## tag for strings
     textEditor.tag_config("comment", foreground="#777777")
     textEditor.tag_config("declareVariable", foreground="#34a2ea")
@@ -226,14 +292,17 @@ def parseText(text:str) -> str:
             elif item == "#":
                 textEditor.tag_add("comment", str(i)+"."+str(j), str(i)+"."+str(len(textDict[i])))
             elif item == "=":
-                textEditor.tag_add("declareVariable", str(i)+"."+"0", str(i)+"."+str(j-1))
+                textEditor.tag_add("declareVariable", str(i)+"."+"0", str(i)+"."+str(j))
             else:
                 for tag in textEditor.tag_names():
                     textEditor.tag_remove(tag, str(i)+"."+str(j), str(i)+"."+str(j+1))
 
 ## I cant for the life of me figure out why tkinter is parsing a "self" argument here, but it is, and it doesnt matter, so i am just going to ignore it..    
 def onModified(toMakeTkinterHappyIgnoreThisVariableNameOrItsGeneralExistence=""): ## RUNS WHENEVER the text in the main window is changed
-    
+    """
+    This is ran every time that the body "textEditor" is modified. it is bound to tkinters modification flag..
+    """
+    updateTextInfo()
     parseText(getFromBody(textEditor))
     if ISAUTOSAVE: ## RESETS THE MODIFIED FLAG
         
@@ -263,7 +332,13 @@ titleBody = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      
                      )
 titleBody.pack()
-textInfo = tki.Text()
+textInfo = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
+                    height=CONFIGURATIONS.getSetting("infoBodyHeight"),
+                    bg = CONFIGURATIONS.getSetting("infoBodyBackground"),
+                    fg=CONFIGURATIONS.getSetting("infoBodyTextColor"),
+                    insertbackground=CONFIGURATIONS.getSetting("infoBodyCursorColor")
+                     )
+textInfo.pack()
 textEditor = tki.Text(width=CONFIGURATIONS.getSetting("generalBodyWidth"),
                      height=CONFIGURATIONS.getSetting("textEditorBodyHeight"), 
                      bg=CONFIGURATIONS.getSetting("textEditorBackground"), 

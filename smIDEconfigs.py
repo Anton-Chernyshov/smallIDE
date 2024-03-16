@@ -33,6 +33,9 @@ titleBodyCursorColor: #dbdbdb
 
 '''
 class ConfigFile():
+    """
+    Config File object
+    """
     def __init__(self, filePath:str=dirs.getDir())-> None:
         self.CONFIGURATIONS = dict()
         self.CONFIGFILEPATH = filePath
@@ -84,6 +87,9 @@ class ConfigFile():
                 file.close()
                 sys.exit()
     def getSetting(self, setting:str) -> str|bool|int:
+        """
+        Returns specified setting stored in cfg
+        """
         try: 
             return self.CONFIGURATIONS[setting]
         except:
@@ -96,10 +102,16 @@ class ConfigFile():
             return default
     
 class Cache():
+    """
+    File cache. data is a single line that can be read after program closed
+    """
     def __init__(self, path:str) -> None:
         self.path = path
         return None
     def formatData(self, data:str) -> str|None:
+        """
+        ???.. i forgor💀💀
+        """
         try:
             format = data  
             self.format = format
@@ -107,8 +119,10 @@ class Cache():
         except:
             return None
     def writeToCache(self, formattedData:str = "") -> None:
-        
-        
+        """
+        Writes string to cache
+        """
+        try:
             #print(self.path)
             with open(self.path, "wt") as cache:
                 if len(formattedData) == 0:
@@ -116,12 +130,15 @@ class Cache():
                 else:
                     pass
             cache.close()
-            '''except FileNotFoundError:
+        except FileNotFoundError:
                 print(f"Cache file {self.path} cannot be found, maybe it was initiated wrong or doesnt exist?")
-            except:
-                print("cannot wrte to cache..")'''
-            return None
+        except:
+                print("cannot wrte to cache..")
+        return None
     def readCache(self) -> str|None:
+        """
+        Returns data from cache
+        """
         try:
             with open(self.path, "rt") as cache:
                 data = cache.read()

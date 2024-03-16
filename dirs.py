@@ -2,6 +2,9 @@ import os
 import sys
 import smIDEerrors
 def getDir() -> str|None:
+ """
+ Gets the current working directory from os.getcdw()
+ """
  try:
   curDir = os.getcwd()
  except:
@@ -11,6 +14,9 @@ def getDir() -> str|None:
  return curDir
 
 def joinDirs(*dirs:str) -> str|None:
+ """
+ Formats directory's with \ characters
+ """
  output = str()
  dirs = list(dirs)
  if len(dirs) == 0:
